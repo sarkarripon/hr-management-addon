@@ -1,0 +1,22 @@
+{
+    "name": "hr/management",
+    "description": "Hr management application",
+    "type": "plugin",
+    "require-dev": {
+        "lucatume/wp-browser": "^4.5",
+        "codeception/codeception": "^5.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hr\\Management\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Authlab"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
