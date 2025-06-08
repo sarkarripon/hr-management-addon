@@ -55,18 +55,29 @@ The search functionality includes the new fields, allowing you to search by:
 
 ### Testing Setup
 
-1. Clone the repository:
+1. Clone both repositories:
 ```bash
-git clone [repository-url]
+git clone [main-plugin-repository-url]
+git clone [addon-repository-url]
 cd hr-management-addon
 ```
 
-2. Set up a local WordPress development environment:
+2. Install dependencies:
+```bash
+composer install
+```
+
+3. Set up a local WordPress development environment:
    - Install WordPress locally
    - Install and activate the main HR Management plugin
    - Install and activate this addon plugin
 
-3. Test the following scenarios:
+4. Run the integration tests:
+```bash
+vendor/bin/codecept run Integration --html --steps
+```
+
+5. Test the following scenarios:
    - Plugin activation
    - Database table creation
    - Form field display
