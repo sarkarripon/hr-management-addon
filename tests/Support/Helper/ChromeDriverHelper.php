@@ -9,7 +9,7 @@ class ChromeDriverHelper
      */
     public static function cleanupChromeDriver()
     {
-        echo "Starting aggressive ChromeDriver cleanup...\n";
+        // echo "Starting aggressive ChromeDriver cleanup...\n";
 
         // First, try to kill all Chrome processes (this is more aggressive)
         if (PHP_OS_FAMILY === 'Darwin') {
@@ -40,7 +40,7 @@ class ChromeDriverHelper
         // Verify cleanup
         $processes = self::getChromeDriverProcesses();
         if (!empty($processes)) {
-            echo "Warning: Some processes still exist after cleanup:\n";
+            // echo "Warning: Some processes still exist after cleanup:\n";
             print_r($processes);
             
             // Try one more time with more force
@@ -80,16 +80,39 @@ class ChromeDriverHelper
     {
         $processes = [];
         if (PHP_OS_FAMILY === 'Darwin') {
-            exec("ps aux | grep -i 'chrome'", $processes);
-            exec("ps aux | grep -i 'chromedriver'", $processes);
+            // Get Chrome processes
+            exec("ps aux | grep -i 'chrome' | grep -v grep", $chromeProcesses);
+            // Get ChromeDriver processes
+            exec("ps aux | grep -i 'chromedriver' | grep -v grep", $driverProcesses);
+            
+            // Combine and format processes
+            foreach (array_merge($chromeProcesses, $driverProcesses) as $process) {
+                if (preg_match('/^\S+\s+(\d+)/', $process, $matches)) {
+                    $processes[] = $matches[1];
+                }
+            }
         } elseif (PHP_OS_FAMILY === 'Windows') {
-            exec("tasklist | findstr /i chrome", $processes);
+            exec("tasklist /FI \"IMAGENAME eq chrome.exe\" /FI \"IMAGENAME eq chromedriver.exe\" /NH", $processes);
+            $processes = array_map(function($process) {
+                if (preg_match('/\s+(\d+)\s+/', $process, $matches)) {
+                    return $matches[1];
+                }
+                return null;
+            }, $processes);
+            $processes = array_filter($processes);
         } else {
-            exec("ps aux | grep -i 'chrome'", $processes);
+            // For Linux
+            exec("ps aux | grep -i 'chrome' | grep -v grep", $chromeProcesses);
+            exec("ps aux | grep -i 'chromedriver' | grep -v grep", $driverProcesses);
+            
+            foreach (array_merge($chromeProcesses, $driverProcesses) as $process) {
+                if (preg_match('/^\S+\s+(\d+)/', $process, $matches)) {
+                    $processes[] = $matches[1];
+                }
+            }
         }
-        return array_filter($processes, function($process) {
-            return strpos($process, 'grep') === false;
-        });
+        
+        return array_values(array_unique($processes));
     }
 
     /**

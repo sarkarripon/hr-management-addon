@@ -3,6 +3,7 @@
 namespace Tests\Integration;
 
 use Codeception\TestCase\WPTestCase;
+use HR_Management;
 
 class SampleTest extends WPTestCase
 {
@@ -10,13 +11,6 @@ class SampleTest extends WPTestCase
     {
         // Before...
         parent::setUp();
-
-        // // Activate the main plugin first
-        // activate_plugin('hr-management/hr-management.php');
-
-        // // Activate the addon plugin
-        // activate_plugin('hr-management-addon/hr-management-addon.php');
-
 
         // Your set-up methods here.
 
@@ -104,6 +98,30 @@ class SampleTest extends WPTestCase
         $table = $wpdb->get_col("SELECT column_name FROM information_schema.columns WHERE table_name = '{$table_name}' AND table_schema = DATABASE()");
 
         $this->assertContains($table_name, $table, 'table should exist');
+
+
     }
 
+    // this test is for the method from base plugin
+
+    public function test_hr_management_addon_hr_validate_options(): void
+    {
+        $input = [
+            'employee_name' => 'John Doe',
+            'employee_role' => 'Developer',
+            'employee_designation' => 'Senior Developer'
+            
+        ];
+
+        $hr_management = HR_Management::get_instance();
+        $result = $hr_management->hr_validate_options($input);
+
+        $this->assertTrue(true, 'hr_validate_options function should exist');
+        $this->assertEquals('John Doe', $result['employee_name']);
+        $this->assertEquals('Developer', $result['employee_role']);
+        $this->assertEquals('Senior Developer', $result['employee_designation']);
+
+
+
+    }
 }
